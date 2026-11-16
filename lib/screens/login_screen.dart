@@ -15,15 +15,11 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _form = GlobalKey<FormState>();
   final _name = TextEditingController();
-  final _email = TextEditingController();
+  late final _email = TextEditingController(
+    text: context.read<Settings>().lastEmail, // filled in from the last time
+  );
   final _password = TextEditingController();
   bool _creating = false; // false: log in, true: create an account
-
-  @override
-  void initState() {
-    super.initState();
-    _email.text = context.read<Settings>().lastEmail; // filled in from the last time
-  }
 
   @override
   void dispose() {
