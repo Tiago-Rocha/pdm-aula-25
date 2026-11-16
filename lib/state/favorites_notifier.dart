@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../data/api_client.dart';
 import '../data/favorites_repository.dart';
-import '../telemetry/app_log.dart';
+import '../telemetry/analytics.dart';
 
 /// The favorite islands of whoever is logged in. It only exists while
 /// there is a session: created at login, thrown away at logout.
@@ -36,7 +36,7 @@ class FavoritesNotifier extends ChangeNotifier {
         await _repository.add(islandId);
         ids.add(islandId);
       }
-      log.info('favorite saved', {
+      analytics.event('favorite_saved', {
         'island': islandId,
         'favorite': isFavorite(islandId),
       });

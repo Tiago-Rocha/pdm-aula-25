@@ -34,9 +34,12 @@ flutter run -d chrome --dart-define=CLIENT_ID=pdm-ab12cd --dart-define=CLIENT_SE
 
 | What | Where | What you see |
 |---|---|---|
-| One log for the whole app: lines with context, sent in batches, kept while offline | `AppLog` in `lib/telemetry/app_log.dart` | `log.info('favorite saved', {'island': 'corvo'})` |
-| Errors nobody caught go to the log, with the stack | `FlutterError.onError` and `platformDispatcher.onError` in `lib/main.dart` | A red line in the logs, with the screen and the island |
-| The app never talks to the log server: the course API does | `log.sink` in `lib/main.dart`, `POST /v1/logs` in the API | Your name and your app on every line, added by the API |
+| The log: what the code did, to find out why something broke | `AppLog` in `lib/telemetry/app_log.dart` | `log.info('islands loaded', {'count': 9})`, `log.error(...)` |
+| Analytics: what the person did, to learn how the app is used | `Analytics` in `lib/telemetry/analytics.dart` | `analytics.event('forecast_opened', {'island': 'corvo'})` |
+| One pipe for both: lines marked `kind: log` or `kind: event`, sent in batches, kept while offline | `Telemetry` in `lib/telemetry/telemetry.dart` | Two tabs on the projector, one per kind |
+| An error says what the person had just done | `last_event` in `AppLog.error` | `forecast_opened island=corvo` next to the red line |
+| Errors nobody caught go to the log, with the stack | `FlutterError.onError` and `platformDispatcher.onError` in `lib/main.dart` | A red line in the logs, with where it broke and the last event |
+| The app never talks to the log server: the course API does | `telemetry.sink` in `lib/main.dart`, `POST /v1/logs` in the API | Your name and your app on every line, added by the API |
 | A screen drawn in a test, with fake data and Ana logged in | `pumpScreen()` in `test/fakes.dart` | `await pumpScreen(tester, const IslandsScreen());` |
 | Repositories that answer straight away, or fail on purpose | `FakeForecastRepository` in `test/fakes.dart` | `FakeForecastRepository()..failing = true` |
 | Every pull request is tested; every merge is published | `.github/workflows/ci.yml` | The green tick in the pull request, then the new version on the phone |
@@ -45,17 +48,21 @@ flutter run -d chrome --dart-define=CLIENT_ID=pdm-ab12cd --dart-define=CLIENT_SE
 
 | Kind | Example | What it checks |
 |---|---|---|
-| Unit: a function or a model, no Flutter | `test/models/forecast_test.dart`, `test/location/nearest_test.dart` | JSON in, values out. Distances. |
+| Unit: a function or a model, no Flutter | `test/models/forecast_test.dart`, `test/location/nearest_test.dart`, `test/telemetry/telemetry_test.dart` | JSON in, values out. Distances. What a log line carries. |
 | State: a notifier with a fake repository | `test/state/forecast_notifier_test.dart`, `test/state/favorites_notifier_test.dart`, `test/state/settings_test.dart` | What the notifier keeps after `load()` or `toggle()` |
 | Widget: a screen, with taps | `test/screens/islands_screen_test.dart`, `test/screens/forecast_screen_test.dart` | What is on screen, what a tap does |
 
 Each test has three parts, separated by a blank line: prepare, do, check.
 
-## What goes in a log line, and what never does
+## Logs and analytics
+
+Two questions, two loggers. The log answers "why did it break?": what the code did, with the error and the stack. Analytics answers "what do people do?": one event per action, named in the past tense (`app_opened`, `forecast_opened`, `favorite_saved`, `nearest_island_found`, `theme_changed`). Both go through the same pipe to the course API and on to OpenObserve, in the same stream (`apps`); the field `kind` tells them apart.
+
+## What goes in a line, and what never does
 
 In: what happened, the screen, the island, the version, the error and the stack. The API adds the app and the user.
 
-Never: passwords, tokens, the exact position, anything the person typed. The log of `nearestIsland` says the island and the kilometres, not where the person is.
+Never: passwords, tokens, the exact position, anything the person typed. The event `nearest_island_found` says the island and the kilometres, not where the person is.
 
 API documentation: https://api-pdm.sublimecipher.com/docs
 

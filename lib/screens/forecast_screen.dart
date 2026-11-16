@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/forecast.dart';
 import '../models/island.dart';
 import '../state/forecast_notifier.dart';
-import '../telemetry/app_log.dart';
+import '../telemetry/analytics.dart';
 
 /// What each island is called by the people who live there.
 const _nicknames = {
@@ -36,7 +36,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
   @override
   void initState() {
     super.initState();
-    log.info('forecast opened', {'island': widget.island.id});
+    analytics.event('forecast_opened', {'island': widget.island.id});
   }
 
   @override
