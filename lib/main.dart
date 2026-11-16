@@ -14,6 +14,7 @@ import 'state/forecast_notifier.dart';
 import 'state/location_notifier.dart';
 import 'state/session_notifier.dart';
 import 'state/settings.dart';
+import 'telemetry/analytics.dart';
 import 'telemetry/app_log.dart';
 
 const clientId = String.fromEnvironment('CLIENT_ID');
@@ -26,8 +27,9 @@ void main() async {
   final session = SessionNotifier(AuthRepository(api), const SessionStore())
     ..restore();
   api.renewSession = session.renew; // on a 401, the ApiClient asks here
-  // every log line goes to the course API, which passes it to OpenObserve
-  log.sink = (lines) => api.postWithToken('/v1/logs', lines);
+  // log lines and analytics events go to the course API,
+  // which passes them to OpenObserve
+  telemetry.sink = (lines) => api.postWithToken('/v1/logs', lines);
   // errors while building, laying out or painting a widget
   FlutterError.onError = (details) {
     FlutterError.presentError(details); // still red in the console
@@ -40,7 +42,7 @@ void main() async {
     log.error(error, stack, {'where': 'uncaught'});
     return true;
   };
-  log.info('app started', {'theme': settings.theme.name});
+  analytics.event('app_opened', {'theme': settings.theme.name});
   runApp(
     MultiProvider(
       providers: [

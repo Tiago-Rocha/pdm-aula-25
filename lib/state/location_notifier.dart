@@ -6,7 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import '../location/location_service.dart';
 import '../location/nearest.dart';
 import '../models/island.dart';
-import '../telemetry/app_log.dart';
+import '../telemetry/analytics.dart';
 
 /// Where the person is. Knows the service, not the widgets.
 class LocationNotifier extends ChangeNotifier {
@@ -32,7 +32,7 @@ class LocationNotifier extends ChangeNotifier {
         final answer = nearestIsland(found, islands);
         nearest = answer;
         // the island and the distance; never the exact position
-        log.info('nearest island', {
+        analytics.event('nearest_island_found', {
           'island': answer.island.id,
           'km': (answer.metres / 1000).round(),
         });
@@ -54,12 +54,10 @@ class LocationNotifier extends ChangeNotifier {
     final position = this.position;
     return switch (status) {
       null => 'Toca no botão para saber a ilha mais próxima.',
-      LocationStatus.serviceOff =>
-        'A localização está desligada no telemóvel.',
+      LocationStatus.serviceOff => 'A localização está desligada no telemóvel.',
       LocationStatus.deniedForever =>
         'Sem permissão. Muda isso nas definições.',
-      LocationStatus.denied =>
-        'Sem a tua posição não há ilha mais próxima.',
+      LocationStatus.denied => 'Sem a tua posição não há ilha mais próxima.',
       LocationStatus.ready when nearest != null =>
         'Estás a ${formatDistance(nearest.metres)} de ${nearest.island.name}.',
       LocationStatus.ready when position != null =>

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../telemetry/app_log.dart';
+import '../telemetry/analytics.dart';
 
 /// Small things that are not secret: the last email and the theme.
 /// Loaded before runApp, so the theme is right on the first frame.
@@ -17,8 +17,9 @@ class Settings extends ChangeNotifier {
 
   // Enums are saved by name, never by index.
   ThemeMode? _theme; // read once, then kept in memory
-  ThemeMode get theme => _theme ??=
-      ThemeMode.values.byName(_prefs.getString('themeMode') ?? 'system');
+  ThemeMode get theme => _theme ??= ThemeMode.values.byName(
+    _prefs.getString('themeMode') ?? 'system',
+  );
 
   Future<void> saveLastEmail(String email) =>
       _prefs.setString('lastEmail', email);
@@ -26,7 +27,7 @@ class Settings extends ChangeNotifier {
   Future<void> saveTheme(ThemeMode mode) async {
     _theme = mode;
     await _prefs.setString('theme', mode.name);
-    log.info('theme saved', {'theme': mode.name});
+    analytics.event('theme_changed', {'theme': mode.name});
     notifyListeners(); // MaterialApp rebuilds with the new theme
   }
 }
