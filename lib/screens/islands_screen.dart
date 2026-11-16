@@ -87,9 +87,9 @@ class IslandsScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(forecast.error!),
+            const Text('Sem ligação'),
             TextButton(
-              onPressed: () => context.read<ForecastNotifier>().load,
+              onPressed: () => context.read<ForecastNotifier>().load(),
               child: const Text('Tentar de novo'),
             ),
           ],
