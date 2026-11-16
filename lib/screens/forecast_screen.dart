@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,19 +26,37 @@ class ForecastScreen extends StatefulWidget {
   const ForecastScreen({super.key, required this.island});
 
   final Island island;
+  
 
   @override
   State<ForecastScreen> createState() => _ForecastScreenState();
 }
 
 class _ForecastScreenState extends State<ForecastScreen> {
-  late final Future<Forecast> _forecast = context
-      .read<ForecastNotifier>()
-      .forecastFor(widget.island.id);
+  late Future<Forecast> _forecast;
+
+  Future<Forecast> _load() =>
+    context.read<ForecastNotifier>().forecastFor(widget.island.id);
+
+  void _retry() {
+  final novo = _load();
+  setState(() {
+    _forecast = novo;
+  });
+}
+    
+
+  String _errorMessage(Object error) {
+    if (error is SocketException || error is TimeoutException) {
+      return 'Sem ligação á internet. Verifique a sua ligação e tente novamente.';
+    }
+    return 'Não foi possível carregar a previsão. Por favor tente mais tarde.';
+  }
 
   @override
   void initState() {
     super.initState();
+    _forecast = _load();
     analytics.event('forecast_opened', {'island': widget.island.id});
   }
 
@@ -62,8 +83,28 @@ class _ForecastScreenState extends State<ForecastScreen> {
           FutureBuilder(
             future: _forecast,
             builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
               if (snapshot.hasError) {
-                return ListTile(title: Text('${snapshot.error}'));
+                return Padding(
+                padding: const EdgeInsets.all(24),
+                 child: Column(
+                  children: [
+                    const Icon(Icons.wifi_off, size: 48),
+                    const SizedBox(height: 12),
+                    Text(
+                      _errorMessage(snapshot.error!),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    FilledButton(
+                      onPressed: _retry,
+                      child: const Text('Tentar novamente'),
+                    ),
+                  ],
+                ),
+              );
               }
               final forecast = snapshot.data;
               if (forecast == null) {
