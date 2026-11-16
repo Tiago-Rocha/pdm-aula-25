@@ -2,7 +2,7 @@
 
 Repository for lesson 25 of PDM (Mobile Device Programming), CTeSP DAW, ESTA, University of the Azores, 2026/27.
 
-Tempo Açores, as you know it, now with a five-day forecast for each island. It runs on your phone at **https://tiago-rocha.github.io/pdm-aula-25/** and it has bugs. People reported six of them: they are in the [Issues](../../issues), each with what the person saw and a hint.
+Tempo Açores, as you know it, now with a five-day forecast for each island. It runs on your phone at **https://tiago-rocha.github.io/pdm-aula-25/** and it has bugs. Your job is to find them.
 
 Today you fix them the way a team does: a test that fails, the fix, a pull request, the CI green, the merge. A few minutes after the merge, the fix is on everyone's phone.
 
@@ -22,12 +22,12 @@ flutter run -d chrome --dart-define=CLIENT_ID=pdm-ab12cd --dart-define=CLIENT_SE
 
 ## Fixing a bug
 
-1. Say in the issue that you are taking it, so two people do not fix the same thing.
+1. Found one? Say it out loud in the room: it is yours, so two people do not fix the same thing.
 2. Make it happen in Chrome. Look at the logs on the projector: your lines have your name.
 3. Write a test that fails because of the bug. The file next to the bug already has a test you can copy.
 4. Fix the code. `flutter test` is green again.
-5. Push a branch (`fix/N-short-name`) to this repository and open a pull request to `main`, with `Fixes #N` in the description. Nobody pushes straight to `main`: it only takes pull requests with the CI green.
-6. The CI runs `flutter analyze` and `flutter test`. Red: read the log, fix, push again. Green: the teacher merges.
+5. Push a branch (`fix/short-name`) to this repository and open a pull request to `main`, saying what the person saw and what you changed. Nobody pushes straight to `main`: it only takes pull requests with the CI green.
+6. The CI runs `flutter analyze` and `flutter test`. Red: read the log, fix, push again. Green: a teammate from your group reviews it. They approve only if there is a new test that fails without the fix, and then they merge.
 7. The CI publishes the web app. Reload the page on your phone: the bug is gone, and the version in the logs is your commit.
 
 ## Where the magic happens
