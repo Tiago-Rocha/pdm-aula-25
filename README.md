@@ -8,8 +8,10 @@ Today you fix them the way a team does: a test that fails, the fix, a pull reque
 
 ## Getting started
 
+First accept the invitation to collaborate: https://github.com/Tiago-Rocha/pdm-aula-25/invitations. No fork: you work on branches in this repository.
+
 ```bash
-git clone https://github.com/<you>/pdm-aula-25.git   # your fork
+git clone https://github.com/Tiago-Rocha/pdm-aula-25.git
 cd pdm-aula-25
 flutter pub get
 flutter test
@@ -24,7 +26,7 @@ flutter run -d chrome --dart-define=CLIENT_ID=pdm-ab12cd --dart-define=CLIENT_SE
 2. Make it happen in Chrome. Look at the logs on the projector: your lines have your name.
 3. Write a test that fails because of the bug. The file next to the bug already has a test you can copy.
 4. Fix the code. `flutter test` is green again.
-5. Push a branch to your fork and open a pull request to this repository, with `Fixes #N` in the description.
+5. Push a branch (`fix/N-short-name`) to this repository and open a pull request to `main`, with `Fixes #N` in the description. Nobody pushes straight to `main`: it only takes pull requests with the CI green.
 6. The CI runs `flutter analyze` and `flutter test`. Red: read the log, fix, push again. Green: the teacher merges.
 7. The CI publishes the web app. Reload the page on your phone: the bug is gone, and the version in the logs is your commit.
 
