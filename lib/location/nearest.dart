@@ -21,7 +21,7 @@ Nearest nearestIsland(Position position, List<Island> islands) {
   var shortest = 0.0;
   for (final island in islands) {
     final metres = distanceTo(position, island);
-    if (metres > shortest) {
+    if (metres < shortest) {
       shortest = metres;
       best = island;
     }
