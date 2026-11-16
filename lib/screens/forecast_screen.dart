@@ -71,7 +71,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
                     const Text('Sem ligação'),
                     TextButton(
                       onPressed: () => setState(_load),
-                      child: const Text('Tentar novamente'),
+                      child: const Text('Tentar de novo'),
                     ),
                   ],
                 );

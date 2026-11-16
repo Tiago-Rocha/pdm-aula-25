@@ -90,7 +90,7 @@ class IslandsScreen extends StatelessWidget {
             const Text('Sem ligação'),
             TextButton(
               onPressed: () => context.read<ForecastNotifier>().load(),
-              child: const Text('Tentar novamente'),
+              child: const Text('Tentar de novo'),
             ),
           ],
         ),
