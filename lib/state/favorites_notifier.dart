@@ -43,8 +43,8 @@ class FavoritesNotifier extends ChangeNotifier {
       error = null;
     } catch (e) {
       error = _message(e);
-      notifyListeners();
     }
+    notifyListeners();
   }
 
   String _message(Object e) =>
