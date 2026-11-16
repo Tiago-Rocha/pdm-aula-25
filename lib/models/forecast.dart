@@ -39,8 +39,8 @@ class DayForecast {
     return DayForecast(
       date: DateTime.parse(json['date'] as String),
       type: WeatherType.values.byName(weather['category'] as String),
-      tMin: (json['tMax'] as num).toDouble(),
-      tMax: (json['tMin'] as num).toDouble(),
+      tMin: (json['tMin'] as num).toDouble(),
+      tMax: (json['tMax'] as num).toDouble(),
       rainChance: json['rainChance'] as int,
       windClass: wind['class'] as int,
     );
