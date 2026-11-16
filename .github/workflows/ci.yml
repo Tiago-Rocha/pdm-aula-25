@@ -1,0 +1,49 @@
+# Every pull request: analyze and test. Green is the only way into main.
+# Every push to main: the same, then build the web app and publish it.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.5
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+
+  deploy:
+    needs: test # only if the tests passed
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.5
+          cache: true
+      - name: Build the web app
+        run: >
+          flutter build web --release --base-href /pdm-aula-25/
+          --dart-define=CLIENT_ID=${{ secrets.CLIENT_ID }}
+          --dart-define=CLIENT_SECRET=${{ secrets.CLIENT_SECRET }}
+          --dart-define=APP_VERSION=${GITHUB_SHA::7}
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+      - id: deployment
+        uses: actions/deploy-pages@v4
