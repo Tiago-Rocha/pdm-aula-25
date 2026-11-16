@@ -16,6 +16,7 @@ const _nicknames = {
   'pico': 'Ilha Montanha',
   'faial': 'Ilha Azul',
   'flores': 'Ilha Rosa',
+  'corvo': 'Ilha Escondida',
 };
 
 /// Five days of weather for one island.
@@ -29,13 +30,14 @@ class ForecastScreen extends StatefulWidget {
 }
 
 class _ForecastScreenState extends State<ForecastScreen> {
-  late final Future<Forecast> _forecast = context
-      .read<ForecastNotifier>()
-      .forecastFor(widget.island.id);
+  late final Future<Forecast> _forecast;
 
   @override
   void initState() {
     super.initState();
+    _forecast = context
+        .read<ForecastNotifier>()
+        .forecastFor(widget.island.id);
     analytics.event('forecast_opened', {'island': widget.island.id});
   }
 
