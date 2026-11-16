@@ -29,14 +29,17 @@ class ForecastScreen extends StatefulWidget {
 }
 
 class _ForecastScreenState extends State<ForecastScreen> {
-  late final Future<Forecast> _forecast = context
-      .read<ForecastNotifier>()
-      .forecastFor(widget.island.id);
+  late Future<Forecast> _forecast;
 
   @override
   void initState() {
     super.initState();
+    _load();
     analytics.event('forecast_opened', {'island': widget.island.id});
+  }
+
+  void _load() {
+    _forecast = context.read<ForecastNotifier>().forecastFor(widget.island.id);
   }
 
   @override
@@ -63,7 +66,15 @@ class _ForecastScreenState extends State<ForecastScreen> {
             future: _forecast,
             builder: (context, snapshot) {
               if (snapshot.hasError) {
-                return ListTile(title: Text('${snapshot.error}'));
+                return Column(
+                  children: [
+                    const Text('Sem ligação'),
+                    TextButton(
+                      onPressed: () => setState(_load),
+                      child: const Text('Tentar novamente'),
+                    ),
+                  ],
+                );
               }
               final forecast = snapshot.data;
               if (forecast == null) {
